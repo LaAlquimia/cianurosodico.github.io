@@ -1,6 +1,8 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
+const wall =  ethereum.request({ method: 'eth_requestAccounts' });
+
 canvas.width = 1024
 canvas.height = 576
 
@@ -61,7 +63,7 @@ const villagerImg = new Image()
 villagerImg.src = './img/villager/Idle.png'
 
 const oldManImg = new Image()
-oldManImg.src = './img/oldMan/Idle.png'
+oldManImg.src = './img/oldMan/Idle.png' 
 
 charactersMap.forEach((row, i) => {
   row.forEach((symbol, j) => {

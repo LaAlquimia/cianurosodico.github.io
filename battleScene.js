@@ -14,6 +14,7 @@ let renderedSprites
 let battleAnimationId
 let queue
 
+
 function initBattle() {
   document.querySelector('#userInterface').style.display = 'block'
   document.querySelector('#dialogueBox').style.display = 'none'
