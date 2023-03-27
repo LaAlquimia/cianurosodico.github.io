@@ -163,6 +163,7 @@ const counter = new Sprite({
   position: {
     x: 750,
     y: 25
+    
   },
   image: counterImage
 })
