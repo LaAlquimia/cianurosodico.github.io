@@ -136,6 +136,10 @@ playerLeftImage.src = './img/playerLeft.png'
 const playerRightImage = new Image()
 playerRightImage.src = './img/playerRight.png'
 
+const counterImage = new Image()
+counterImage.src = './img/counter.png'
+
+
 const player = new Sprite({
   position: {
     x: canvas.width / 2 - 192 / 4 / 2,
@@ -153,6 +157,17 @@ const player = new Sprite({
     down: playerDownImage
   }
 })
+
+
+const counter = new Sprite({
+  position: {
+    x: 750,
+    y: 25
+  },
+  image: counterImage
+})
+
+
 
 const background = new Sprite({
   position: {
@@ -194,6 +209,7 @@ const movables = [
 ]
 const renderables = [
   background,
+  counter,
   ...boundaries,
   ...battleZones,
   ...characters,
