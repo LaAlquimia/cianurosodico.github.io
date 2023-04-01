@@ -1,8 +1,18 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
+canvas.width = 1024
+canvas.height = 576
 
+document.addEventListener('DOMContentLoaded', async function() {
 
-document.addEventListener('DOMContentLoaded', function() {
+  const wall =  ethereum.request({ method: 'eth_requestAccounts' });
+
+  const bar = document.getElementById("barra")
+  const walletid = document.getElementById("walletid")
+  const tokenbalance = document.getElementById("tokenbalance")  
+
+  bar.style.width = canvas.width
+
   const providerUrl = 'https://bsc-dataseed1.binance.org/';
   const conn = new Web3(providerUrl);
   const contractAddress = '0x4b48c0db4e460c894bfc031d602a5c3b57a26857';
@@ -29,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
   ];
   const tokenContract = new conn.eth.Contract(tokenAbi, contractAddress);
   const address = ethereum.selectedAddress ;
-  const wall =  ethereum.request({ method: 'eth_requestAccounts' });
   console.log(address)
 
 
@@ -41,16 +50,14 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log(balance)
     return balance
   } 
-
-
-  bal = obtenerBalance()
+  bal = await obtenerBalance()
   console.log(bal);
+
+  walletid.textContent = address.slice(0, 3)+ "..."+address.slice(- 4)
+  tokenbalance.textContent = bal
 
 });
   
-
-canvas.width = 1024
-canvas.height = 576
 
 
 
@@ -185,8 +192,6 @@ playerLeftImage.src = './img/playerLeft.png'
 const playerRightImage = new Image()
 playerRightImage.src = './img/playerRight.png'
 
-const counterImage = new Image()
-counterImage.src = './img/counter.png'
 
 
 const player = new Sprite({
@@ -207,15 +212,6 @@ const player = new Sprite({
   }
 })
 
-
-const counter = new Sprite({
-  position: {
-    x: 750,
-    y: 25
-    
-  },
-  image: counterImage
-})
 
 
 
@@ -259,7 +255,6 @@ const movables = [
 ]
 const renderables = [
   background,
-  counter,
   ...boundaries,
   ...battleZones,
   ...characters,
