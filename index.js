@@ -1,52 +1,53 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
-const wall =  ethereum.request({ method: 'eth_requestAccounts' });
+
+document.addEventListener('DOMContentLoaded', function() {
+  const providerUrl = 'https://bsc-dataseed1.binance.org/';
+  const conn = new Web3(providerUrl);
+  const contractAddress = '0x4b48c0db4e460c894bfc031d602a5c3b57a26857';
+  const tokenAbi = [
+      {
+          "constant": true,
+          "inputs": [
+              {
+                  "name": "_owner",
+                  "type": "address"
+              }
+          ],
+          "name": "balanceOf",
+          "outputs": [
+              {
+                  "name": "balance",
+                  "type": "uint256"
+              }
+          ],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+      },
+  ];
+  const tokenContract = new conn.eth.Contract(tokenAbi, contractAddress);
+  const address = ethereum.selectedAddress ;
+  const wall =  ethereum.request({ method: 'eth_requestAccounts' });
+  console.log(address)
 
 
-
-const providerUrl = 'https://bsc-dataseed1.binance.org/';
-const conn = new Web3(providerUrl);
-const contractAddress = '0x4b48c0db4e460c894bfc031d602a5c3b57a26857';
-const tokenAbi = [
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "_owner",
-                "type": "address"
-            }
-        ],
-        "name": "balanceOf",
-        "outputs": [
-            {
-                "name": "balance",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-];
-const tokenContract = new conn.eth.Contract(tokenAbi, contractAddress);
-const address = ethereum.selectedAddress ;
-
-console.log(address)
+  async function obtenerBalance() {
+    const balance = await tokenContract.methods.balanceOf(address).call()/10**18;
+    c.font = '20px Arial';
+    c.fillStyle = 'black';
+    c.fillText(`Balance del contrato: ${balance}`, 50, 50);
+    console.log(balance)
+    return balance
+  } 
 
 
-async function obtenerBalance() {
-  const balance = await tokenContract.methods.balanceOf(address).call()/10**18;
-  c.font = '20px Arial';
-  c.fillStyle = 'black';
-  c.fillText(`Balance del contrato: ${balance}`, 50, 50);
-  console.log(balance)
-  return balance
-} 
+  bal = obtenerBalance()
+  console.log(bal);
 
-
-bal = obtenerBalance()
-console.log(bal);
+});
+  
 
 canvas.width = 1024
 canvas.height = 576
