@@ -73,8 +73,8 @@ for (let i = 0; i < battleZonesData.length; i += 70) {
 }
 
 const charactersMap = []
-for (let i = 0; i < charactersMapData.length; i += 70) {
-  charactersMap.push(charactersMapData.slice(i, 70 + i))
+for (let i = 0; i < charactersMapData.length; i += 100 ) {
+  charactersMap.push(charactersMapData.slice(i, 100 + i))
 }
 console.log(charactersMap)
 
@@ -86,7 +86,7 @@ const offset = {
 
 collisionsMap.forEach((row, i) => {
   row.forEach((symbol, j) => {
-    if (symbol === 106)
+    if (symbol === 106) 
       boundaries.push(
         new Boundary({
           position: {
@@ -124,7 +124,7 @@ oldManImg.src = './img/oldMan/Idle.png'
 charactersMap.forEach((row, i) => {
   row.forEach((symbol, j) => {
     // 1026 === villager
-    if (symbol === 1026) {
+    if (symbol === 103) {
       characters.push(
         new Character({
           position: {
@@ -143,7 +143,7 @@ charactersMap.forEach((row, i) => {
       )
     }
     // 1031 === oldMan
-    else if (symbol === 1031) {
+    else if (symbol === 659) {
       characters.push(
         new Character({
           position: {
@@ -156,7 +156,7 @@ charactersMap.forEach((row, i) => {
             hold: 60
           },
           scale: 3,
-          dialogue: ['El gafas: Lo más seguro es que quien sabe']
+          dialogue: ['El gafas: Lo más seguro es que quien sabe','Degenetrader! Aquí le tengo los puntos del Día de Hoy &#128034;']
         })
       )
     }
