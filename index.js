@@ -4,7 +4,6 @@ canvas.width = 1024
 canvas.height = 576
 
 document.addEventListener('DOMContentLoaded', async function() {
-
   const wall =  ethereum.request({ method: 'eth_requestAccounts' });
 
   const bar = document.getElementById("barra")
@@ -16,6 +15,8 @@ document.addEventListener('DOMContentLoaded', async function() {
   const providerUrl = 'https://bsc-dataseed1.binance.org/';
   const conn = new Web3(providerUrl);
   const contractAddress = '0x4b48c0db4e460c894bfc031d602a5c3b57a26857';
+
+  const ogtAddress = '0x598642F59c0366643C6F9ee3252cBB3Ef1524C51';
   const tokenAbi = [
       {
           "constant": true,
@@ -38,20 +39,26 @@ document.addEventListener('DOMContentLoaded', async function() {
       },
   ];
   const tokenContract = new conn.eth.Contract(tokenAbi, contractAddress);
+  const ogtContract = new conn.eth.Contract(tokenAbi, ogtAddress);
+
   const address = ethereum.selectedAddress ;
   console.log(address)
 
 
   async function obtenerBalance() {
     const balance = await tokenContract.methods.balanceOf(address).call()/10**18;
-    c.font = '20px Arial';
-    c.fillStyle = 'black';
-    c.fillText(`Balance del contrato: ${balance}`, 50, 50);
     console.log(balance)
+    return balance
+  } 
+
+  async function ogtBalance() {
+    const balance = await ogtContract.methods.balanceOf(address).call()/10**18;
+    console.log(balance);
     return balance
   } 
   bal = await obtenerBalance()
   console.log(bal);
+  ogt= await ogtBalance()
 
   walletid.textContent = address.slice(0, 3)+ "..."+address.slice(- 4)
   tokenbalance.textContent = bal
@@ -156,7 +163,12 @@ charactersMap.forEach((row, i) => {
             hold: 60
           },
           scale: 3,
-          dialogue: ['El gafas: Lo más seguro es que quien sabe','Degenetrader! Aquí le tengo los puntos del Día de Hoy &#128034;']
+          dialogue: ['El gafas: Lo más seguro es que quien sabe',
+            'El gafas: Sin embargo estás acá por algo',
+            'El gafas: Tengo esto para ti, y espero que lo cuides bien',
+            'El gafas: a ver te reviso el OGT....',
+            'El gafas: Degenetrader! a ver si Tienes $OGT &#128034; ...',            
+            'El gafas: Aquí tienes Tu cabra 🐑🐏 <button id = "mint" href="#" onclick="minter()">a</button>']
         })
       )
     }
@@ -469,6 +481,10 @@ function animate() {
   }
 }
 // animate()
+function minter() {
+  console.log(ogt);
+  document.querySelector('#characterDialogueBox').innerHTML = "Tienes "+ ogt + " OGTS!" ;
+}
 
 let lastKey = ''
 window.addEventListener('keydown', (e) => {
