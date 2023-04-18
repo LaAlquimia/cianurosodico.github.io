@@ -163,12 +163,12 @@ charactersMap.forEach((row, i) => {
             hold: 60
           },
           scale: 3,
-          dialogue: ['El gafas: Lo más seguro es que quien sabe',
-            'El gafas: Sin embargo estás acá por algo',
-            'El gafas: Tengo esto para ti, y espero que lo cuides bien',
-            'El gafas: a ver te reviso el OGT....',
-            'El gafas: Degenetrader! a ver si Tienes $OGT &#128034; ...',            
-            'El gafas: Aquí tienes Tu cabra 🐑🐏 <button id = "mint" href="#" onclick="minter()">a</button>']
+          dialogue: ['El Gafas: Lo más seguro es que quien sabe',
+            'El Gafas: Sin embargo estás acá por algo',
+            'El Gafas: Tengo esto para ti, y espero que lo cuides bien',
+            'El Gafas: a ver te reviso el OGT....',
+            'El Gafas: Degenetrader! a ver si Tienes $OGT &#128034; ...',            
+            'El Gafas: Aquí tienes Tu cabra 🐑🐏 <button id = "mint" href="#" onclick="minter()">a</button>']
         })
       )
     }
