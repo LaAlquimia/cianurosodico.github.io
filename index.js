@@ -2,68 +2,192 @@ const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 canvas.width = 1024
 canvas.height = 576
+const ogtAddress = '0x598642F59c0366643C6F9ee3252cBB3Ef1524C51';
+const minteAdress= '0x103e996559056d4ade375597ac1c364c4071341d';
 
-document.addEventListener('DOMContentLoaded', async function() {
-  const wall =  ethereum.request({ method: 'eth_requestAccounts' });
-
+window.onload = async (event) => {  
   const bar = document.getElementById("barra")
-  const walletid = document.getElementById("walletid")
-  const tokenbalance = document.getElementById("tokenbalance")  
 
   bar.style.width = canvas.width
 
-  const providerUrl = 'https://bsc-dataseed1.binance.org/';
-  const conn = new Web3(providerUrl);
-  const contractAddress = '0x4b48c0db4e460c894bfc031d602a5c3b57a26857';
+  // check if ethereum extension is installed
+  if (window.ethereum) {
+    // create web3 instance
+    window.web3 = new Web3(window.ethereum);
+  } else {
+    // prompt user to install Metamask
+    alert("Please install MetaMask or any Ethereum Extension Wallet");
+  }
+  // check if user is already logged in and update the global userWalletAddress variable
+  window.userWalletAddress = window.localStorage.getItem("userWalletAddress");
 
-  const ogtAddress = '0x598642F59c0366643C6F9ee3252cBB3Ef1524C51';
-  const tokenAbi = [
-      {
-          "constant": true,
-          "inputs": [
-              {
-                  "name": "_owner",
-                  "type": "address"
-              }
-          ],
-          "name": "balanceOf",
-          "outputs": [
-              {
-                  "name": "balance",
-                  "type": "uint256"
-              }
-          ],
-          "payable": false,
-          "stateMutability": "view",
-          "type": "function"
-      },
-  ];
-  const tokenContract = new conn.eth.Contract(tokenAbi, contractAddress);
-  const ogtContract = new conn.eth.Contract(tokenAbi, ogtAddress);
+  // show the user dashboard
 
-  const address = ethereum.selectedAddress ;
-  console.log(address)
+  const walletid = document.getElementById("walletid")
+  walletid.innerHTML = '<button id = "login" href="#" onclick="loginWithEth()">Login</button>';
+}
+
+async function ogtBalance() {
+  const ogtContract = new window.web3.eth.Contract(fullABI, ogtAddress); 
+  const balance = await ogtContract.methods.balanceOf(window.userWalletAddress).call()/10**18;
+  console.log(balance);
+  return balance
+      } 
+
+async function ogtAllow() {
+  const ogtContract = new window.web3.eth.Contract(fullABI, ogtAddress); 
+  const allow = await ogtContract.methods.allowance(userWalletAddress, minteAdress).call()/10**18;
+  console.log(allow);
+  return allow
+      } 
+
+async function minterfunct(id) {
+  const minterContract = new window.web3.eth.Contract(minterABI,minteAdress);
+  await minterContract.methods.mint(id,"0x00").send({from: userWalletAddress});
+
+}
 
 
-  async function obtenerBalance() {
-    const balance = await tokenContract.methods.balanceOf(address).call()/10**18;
-    console.log(balance)
-    return balance
-  } 
+async function minter() {
+  const oBal = await ogtBalance()
+  const allw = await ogtAllow()
+  document.querySelector('#characterDialogueBox').innerHTML = '<p>'+"Tienes "+ oBal + " OGTS! "+'</p>' +'<p>'+"\nTienes "+ allw + " Para Mintear"+'</p>';
+  if (oBal >= 50000){
+    if (allw<20000){
+      const ogtContract = new window.web3.eth.Contract(fullABI, ogtAddress); 
+      await ogtContract.methods.approve("0x103e996559056d4ade375597ac1c364c4071341d", "100000000000000000000000").send({from: userWalletAddress});
+      minter();
+    }
+    else if (allw>20000 && allw < 50000 ){
+      document.querySelector('#characterDialogueBox').innerHTML =`
+<div class="button-container">
+  <button id="mint2" onclick="minterfunct(2)">🐐 Bicha 🐐<br>20k<br>OGT</button>
+</div>
+<style>
+  .button-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  button {
+  flex: 1 0 auto;
+  flex-basis: 0;
+  margin-right: 40px;
+  }
+</style>
+`;
+      //document.querySelector('#characterDialogueBox').innerHTML ="Tienes "+ oBal + " OGTS! \n"+ '<button id = "mint2" href="#" onclick="minterfunct(2)">🐐Bicha🐐</button>'
+    }
+    else if (allw>=50000 && allw < 100000 ){
+      document.querySelector('#characterDialogueBox').innerHTML =`
+<div class="button-container">
+  <button id="mint2" onclick="minterfunct(2)">🐐 Bicha 🐐<br>20k<br>OGT</button>
+  <button id="mint1" onclick="minterfunct(1)">🐐 Parcerita 🐐<br>50k<br></button>
+</div>
+<style>
+  .button-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  button {
+  flex: 1 0 auto;
+  flex-basis: 0;
+  margin-right: 40px;
+  }
+</style>
+`;
+ }
+    else if (allw>=100000){
+      document.querySelector('#characterDialogueBox').innerHTML =`
+<div class="button-container">
+  <button id="mint2" onclick="minterfunct(2)">🐐 Bicha 🐐<br>20k<br>OGT</button>
+  <button id="mint1" onclick="minterfunct(1)">🐐 Parcerita 🐐<br>50k<br></button>  
+  <button id="mint0" onclick="minterfunct(0)">🐐 Beeti 🐐<br>100k<br>OGT</button>
+</div>
+<style>
+  .button-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  button {
+  flex: 1 0 auto;
+  flex-basis: 0;
+  margin-right: 40px;
+  }
+</style>
+`;
+ }
+  }
 
-  async function ogtBalance() {
-    const balance = await ogtContract.methods.balanceOf(address).call()/10**18;
-    console.log(balance);
-    return balance
-  } 
-  bal = await obtenerBalance()
-  console.log(bal);
-  ogt= await ogtBalance()
+  else{
+      document.querySelector('#characterDialogueBox').innerHTML = "El Gafas: No tiene suficiente OGT Pele Esas Nalgas"
+    }
+  
+}
 
-  walletid.textContent = address.slice(0, 3)+ "..."+address.slice(- 4)
-  tokenbalance.textContent = bal
 
-});
+
+const loginWithEth = async () => {
+  // check if there is global window.web3 instance
+  if (window.web3) {
+    try {
+      // get the user's ethereum account - prompts metamask to login
+      const selectedAccount = await window.ethereum
+        .request({
+          method: "eth_requestAccounts",
+        })
+        .then((accounts) => accounts[0])
+        .catch(() => {
+          // if the user cancels the login prompt
+          throw Error("Please select an account");
+        });
+
+      // set the global userWalletAddress variable to selected account
+      window.userWalletAddress = selectedAccount;
+
+      // store the user's wallet address in local storage
+      window.localStorage.setItem("userWalletAddress", selectedAccount);
+
+      const walletid = document.getElementById("walletid")
+      const tokenbalance = document.getElementById("tokenbalance") 
+      const conn = new Web3(window.ethereum);
+      const contractAddress = '0x4b48c0db4e460c894bfc031d602a5c3b57a26857';
+
+      const ogtAddress = '0x598642F59c0366643C6F9ee3252cBB3Ef1524C51';
+      
+
+      const tokenContract = new conn.eth.Contract(fullABI, contractAddress);      
+      const address = ethereum.selectedAddress;
+      console.log(address)
+
+      async function obtenerBalance() {
+        const balance = await tokenContract.methods.balanceOf(address).call()/10**18;
+        console.log(balance)
+        return balance
+      } 
+
+      async function ogtBalance() {
+        const balance = await ogtContract.methods.balanceOf(address).call()/10**18;
+        console.log(balance);
+        return balance
+      } 
+
+      walletid.innerHTML = address.slice(0, 3)+ "..."+address.slice(- 4);
+      bal =  await obtenerBalance();
+      tokenbalance.textContent = bal;
+
+    } catch (error) {
+      alert(error);
+    }
+  } else {
+    alert("wallet not found");
+  }
+};
+
+
+
   
 
 
@@ -165,10 +289,11 @@ charactersMap.forEach((row, i) => {
           scale: 3,
           dialogue: ['El Gafas: Lo más seguro es que quien sabe',
             'El Gafas: Sin embargo estás acá por algo',
-            'El Gafas: Tengo esto para ti, y espero que lo cuides bien',
+            'El Gafas: Gracias Por celebrar este año de ONE GOOD TOKEN 👌🏻',            
+            'El Gafas: Si le quieres dar uso a tus OGTs...😛😛',
+            'El Gafas: Tengo ESTE para ti, y espero que lo cuides bien',
             'El Gafas: a ver te reviso el OGT....',
-            'El Gafas: Degenetrader! a ver si Tienes $OGT &#128034; ...',            
-            'El Gafas: Aquí tienes Tu cabra 🐑🐏 <button id = "mint" href="#" onclick="minter()">a</button>']
+            'El Gafas: Degenetrader! a ver si Tienes $OGT &#128034; ...  🐑 🐏<br><br>Primero Debes Arpovar el OGT <button id = "mint" href="#" onclick="minter()">🐑🐐🐏</button>']
         })
       )
     }
@@ -481,10 +606,7 @@ function animate() {
   }
 }
 // animate()
-function minter() {
-  console.log(ogt);
-  document.querySelector('#characterDialogueBox').innerHTML = "Tienes "+ ogt + " OGTS!" ;
-}
+
 
 let lastKey = ''
 window.addEventListener('keydown', (e) => {
@@ -565,3 +687,631 @@ addEventListener('click', () => {
     clicked = true
   }
 })
+
+
+const fullABI = [{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"constant":true,"inputs":[],"name":"_decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"_name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"_symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burn","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"renounceOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}] 
+const minterABI = [{
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_symbol",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },{
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "name": "ApprovalForAll",
+    "type": "event"
+  },{
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },{
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Paused",
+    "type": "event"
+  },{
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "ids",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "values",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "TransferBatch",
+    "type": "event"
+  },{
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "TransferSingle",
+    "type": "event"
+  },{
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "value",
+        "type": "string"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "URI",
+    "type": "event"
+  },{
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Unpaused",
+    "type": "event"
+  },{
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },{
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "accounts",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "ids",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "balanceOfBatch",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },{
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "burn",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },{
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "ids",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "values",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "burnBatch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },{
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "exists",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },{
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      }
+    ],
+    "name": "isApprovedForAll",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },{
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "mint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },{
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "ids",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "mintBatch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },{
+    "inputs": [],
+    "name": "minteable",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },{
+    "inputs": [],
+    "name": "name",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },{
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "tokenURI",
+        "type": "string"
+      }
+    ],
+    "name": "newTokenUri",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },{
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },{
+    "inputs": [],
+    "name": "pause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },{
+    "inputs": [],
+    "name": "pauseMint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },{
+    "inputs": [],
+    "name": "paused",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },{
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },{
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "ids",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "safeBatchTransferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },{
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "safeTransferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },{
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "name": "setApprovalForAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },{
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "supportsInterface",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },{
+    "inputs": [],
+    "name": "symbol",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },{
+    "inputs": [],
+    "name": "tokenAddress",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },{
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "totalSupply",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },{
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },{
+    "inputs": [],
+    "name": "unPausePint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },{
+    "inputs": [],
+    "name": "unpause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },{
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "uri",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },{
+    "inputs": [],
+    "name": "withdrawToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
