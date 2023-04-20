@@ -4,7 +4,7 @@ canvas.width = 1024
 canvas.height = 576
 const ogtAddress = '0x598642F59c0366643C6F9ee3252cBB3Ef1524C51';
 const minteAdress= '0x103e996559056d4ade375597ac1c364c4071341d';
-
+const contractAddress = '0x4b48c0db4e460c894bfc031d602a5c3b57a26857';
 window.onload = async (event) => {  
   const bar = document.getElementById("barra")
 
@@ -51,55 +51,16 @@ async function minterfunct(id) {
 async function minter() {
   const oBal = await ogtBalance()
   const allw = await ogtAllow()
-  document.querySelector('#characterDialogueBox').innerHTML = '<p>'+"Tienes "+ oBal + " OGTS! "+'</p>' +'<p>'+"\nTienes "+ allw + " Para Mintear"+'</p>';
-  if (oBal >= 50000){
+  document.querySelector('#characterDialogueBox').innerHTML = '<p>'+"Tienes "+ oBal + " OGTS! "+'</p>' +'<p>'+"Tienes "+ allw + " Para Mintear"+'</p>';
+  if (oBal >= 10000){ 
     if (allw<20000){
       const ogtContract = new window.web3.eth.Contract(fullABI, ogtAddress); 
       await ogtContract.methods.approve("0x103e996559056d4ade375597ac1c364c4071341d", "100000000000000000000000").send({from: userWalletAddress});
-      minter();
-    }
-    else if (allw>20000 && allw < 50000 ){
-      document.querySelector('#characterDialogueBox').innerHTML =`
-<div class="button-container">
-  <button id="mint2" onclick="minterfunct(2)">🐐 Bicha 🐐<br>20k<br>OGT</button>
-</div>
-<style>
-  .button-container {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  button {
-  flex: 1 0 auto;
-  flex-basis: 0;
-  margin-right: 40px;
-  }
-</style>
-`;
-      //document.querySelector('#characterDialogueBox').innerHTML ="Tienes "+ oBal + " OGTS! \n"+ '<button id = "mint2" href="#" onclick="minterfunct(2)">🐐Bicha🐐</button>'
-    }
-    else if (allw>=50000 && allw < 100000 ){
-      document.querySelector('#characterDialogueBox').innerHTML =`
-<div class="button-container">
-  <button id="mint2" onclick="minterfunct(2)">🐐 Bicha 🐐<br>20k<br>OGT</button>
-  <button id="mint1" onclick="minterfunct(1)">🐐 Parcerita 🐐<br>50k<br></button>
-</div>
-<style>
-  .button-container {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  button {
-  flex: 1 0 auto;
-  flex-basis: 0;
-  margin-right: 40px;
-  }
-</style>
-`;
- }
-    else if (allw>=100000){
-      document.querySelector('#characterDialogueBox').innerHTML =`
+      minter();    }
+    else if (allw>20000){
+      document.querySelector('#characterDialogueBox').innerHTML ="Tienes "+ allw + " Para Mintear"+'</p>'+`
+
+
 <div class="button-container">
   <button id="mint2" onclick="minterfunct(2)">🐐 Bicha 🐐<br>20k<br>OGT</button>
   <button id="mint1" onclick="minterfunct(1)">🐐 Parcerita 🐐<br>50k<br></button>  
@@ -152,10 +113,9 @@ const loginWithEth = async () => {
 
       const walletid = document.getElementById("walletid")
       const tokenbalance = document.getElementById("tokenbalance") 
-      const conn = new Web3(window.ethereum);
-      const contractAddress = '0x4b48c0db4e460c894bfc031d602a5c3b57a26857';
 
-      const ogtAddress = '0x598642F59c0366643C6F9ee3252cBB3Ef1524C51';
+
+      const conn = new Web3(window.ethereum);
       
 
       const tokenContract = new conn.eth.Contract(fullABI, contractAddress);      
