@@ -57,7 +57,7 @@ async function minter() {
   const oBal = await ogtBalance()
   const allw = await ogtAllow()
   document.querySelector('#characterDialogueBox').innerHTML = '<p>'+"Tienes "+ oBal + " OGTS! "+'</p>' +'<p>'+"Tienes "+ allw + " Para Mintear"+'</p>';
-  if (oBal >= 10000){ 
+  if (oBal >= 5000){ 
     if (allw<20000){
       const ogtContract = new window.web3.eth.Contract(fullABI, ogtAddress); 
       await ogtContract.methods.approve("0x103e996559056d4ade375597ac1c364c4071341d", "100000000000000000000000").send({from: userWalletAddress});
@@ -68,7 +68,7 @@ async function minter() {
       <br>  🐐
       <br> Necesitas ser Holder <br> >= [ 50k , 100k, 500k ]
       <br>  
-      <button aonclick = allowtoken() >Aprovar más</button>
+      <button onclick = allowtoken() >Aprovar más</button>
       <br>     `+`
 
 
